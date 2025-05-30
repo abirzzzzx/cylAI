@@ -1,56 +1,187 @@
-document.addEventListener('DOMContentLoaded', () => {
-  const askAbzBtn = document.getElementById('askAbzBtn');
-  const askContainer = document.getElementById('askContainer');
-  const chatLog = document.getElementById('chatLog');
-  const userInput = document.getElementById('userInput');
-  const sendBtn = document.getElementById('sendBtn');
+const suggestionBox = document.getElementById('suggestionBox');
+const ts = document.getElementById('ts');
+const askBtn = document.getElementById('askAbzBtn');
+const askContainer = document.getElementById('askContainer');
+const userInput = document.getElementById('userInput');
+const sendBtn = document.getElementById('sendBtn');
+const chatLog = document.getElementById('chatLog');
 
-  // Show the chat input area when button clicked
-  askAbzBtn.addEventListener('click', () => {
-    askContainer.style.display = 'flex';
-    userInput.focus();
-  });
+let suggestionList = [];
+let suggestionIndex = 0;
+let charIndex = 0;
+let typingForward = true;
+const typingSpeed = 40;
+const pauseTime = 3500;
 
-  // Append a message to chat log with white text color
-  function appendMessage(text, sender) {
-    const messageDiv = document.createElement('div');
-    messageDiv.classList.add('message', sender);
-    messageDiv.textContent = text;
-    // Override text color to white for both user and AI messages
-    messageDiv.style.color = '#ffffff';
-    chatLog.appendChild(messageDiv);
-    chatLog.scrollTop = chatLog.scrollHeight;
+let chatHistory = JSON.parse(sessionStorage.getItem('chatHistory')) || [];
+
+function createMessageElement(sender, message) {
+  const div = document.createElement('div');
+  div.classList.add('message');
+  div.classList.add(sender === 'You' ? 'user' : 'abz');
+  div.textContent = message;
+  return div;
+}
+
+function renderChat() {
+  chatLog.innerHTML = '';
+  for (const entry of chatHistory) {
+    chatLog.appendChild(createMessageElement(entry.sender, entry.message));
   }
+  chatLog.scrollTop = chatLog.scrollHeight;
+}
 
-  // Fake AI response for demonstration purposes
-  function getAIResponse(userText) {
-    // Replace this with real AI or bot logic
-    return `Abz says: You asked "${userText}"? Interesting!`;
+async function fetchSuggestion() {
+  try {
+    const res = await fetch('https://api.naga.ac/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ng-1q22mTLKYzbfl7rcZ3f0efRAMIrbL5NE'
+      },
+      body: JSON.stringify({
+        model: 'gpt-4o-mini',
+        messages: [
+          {
+            role: 'system',
+            content: 'You are a fun, expressive AI that gives short, punchy coding ideas with emojis and excitement! Use short words. not exceeding over 80 letters'
+          },
+          {
+            role: 'user',
+            content: 'Give one short coding idea suggestion with emojis and excitement!'
+          }
+        ]
+      })
+    });
+    const data = await res.json();
+    return data.choices[0]?.message?.content.trim() || 'Make a fun bot that tells jokes! 😂';
+  } catch {
+    return 'Try making a chatbot that tells jokes! 😂';
   }
+}
 
-  // Send user input and get AI response
-  function sendMessage() {
-    const text = userInput.value.trim();
-    if (text === '') return;
-
-    appendMessage(text, 'user'); // User message
-    userInput.value = '';
-    
-    // Simulate AI response after a delay
-    setTimeout(() => {
-      const aiReply = getAIResponse(text);
-      appendMessage(aiReply, 'abz'); // AI message
-    }, 700);
+async function prepareSuggestions() {
+  if (suggestionList.length > 0) return;
+  suggestionList = [];
+  for (let i = 0; i < 5; i++) {
+    const sug = await fetchSuggestion();
+    suggestionList.push(sug);
   }
+}
 
-  // Send message on button click
-  sendBtn.addEventListener('click', sendMessage);
-
-  // Send message on Enter key press
-  userInput.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter') {
-      e.preventDefault();
-      sendMessage();
+function splitLongText(text, maxLen = 35) {
+  const words = text.split(' ');
+  let lines = [];
+  let line = '';
+  for (const word of words) {
+    if ((line + (line ? ' ' : '') + word).length <= maxLen) {
+      line += (line ? ' ' : '') + word;
+    } else {
+      if (line) lines.push(line);
+      if (word.length > maxLen) {
+        lines.push(word);
+        line = '';
+      } else {
+        line = word;
+      }
     }
-  });
+  }
+  if (line) lines.push(line);
+  return lines;
+}
+
+async function typeLoop() {
+  if (suggestionList.length === 0) {
+    suggestionBox.textContent = 'Loading ideas...';
+    await prepareSuggestions();
+    setTimeout(typeLoop, 1000);
+    return;
+  }
+  const currentText = suggestionList[suggestionIndex];
+  if (typingForward) {
+    if (charIndex < currentText.length) {
+      charIndex++;
+      showTextWithWrap(currentText.slice(0, charIndex));
+      setTimeout(typeLoop, typingSpeed);
+    } else {
+      typingForward = false;
+      setTimeout(typeLoop, pauseTime);
+    }
+  } else {
+    if (charIndex > 0) {
+      charIndex--;
+      showTextWithWrap(currentText.slice(0, charIndex));
+      setTimeout(typeLoop, typingSpeed / 2);
+    } else {
+      typingForward = true;
+      suggestionIndex = (suggestionIndex + 1) % suggestionList.length;
+      if (suggestionIndex === 0) suggestionList = [];
+      setTimeout(typeLoop, 500);
+    }
+  }
+}
+
+function showTextWithWrap(text) {
+  const lines = splitLongText(text, 35);
+  suggestionBox.textContent = lines.join('\n');
+}
+
+askBtn.addEventListener('click', () => {
+  if (askContainer.style.display === 'flex') {
+    askContainer.style.display = 'none';
+  } else {
+    askContainer.style.display = 'flex';
+    renderChat();
+    userInput.focus();
+  }
 });
+
+async function getAbzResponse(userMsg) {
+  try {
+    const response = await fetch('https://api.naga.ac/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ng-1q22mTLKYzbfl7rcZ3f0efRAMIrbL5NE'
+      },
+      body: JSON.stringify({
+        model: 'gpt-4o-mini',
+        messages: [
+          { role: 'system', content: 'You are Abz AI, super helpful and chill.' },
+          ...chatHistory.map(e => ({
+            role: e.sender === 'You' ? 'user' : 'assistant',
+            content: e.message
+          })),
+          { role: 'user', content: userMsg }
+        ],
+        max_tokens: 150
+      })
+    });
+    const data = await response.json();
+    return data.choices[0]?.message?.content || 'No response.';
+  } catch {
+    return 'Sorry, no response from Abz right now.';
+  }
+}
+
+async function sendMessage() {
+  const message = userInput.value.trim();
+  if (!message) return;
+  chatHistory.push({ sender: 'You', message });
+  renderChat();
+  userInput.value = '';
+  sessionStorage.setItem('chatHistory', JSON.stringify(chatHistory));
+
+  const reply = await getAbzResponse(message);
+  chatHistory.push({ sender: 'Abz', message: reply });
+  renderChat();
+  sessionStorage.setItem('chatHistory', JSON.stringify(chatHistory));
+}
+
+sendBtn.addEventListener('click', sendMessage);
+userInput.addEventListener('keydown', e => {
+  if (e.key === 'Enter') sendMessage();
+});
+
+// Start suggestion typing loop
+prepareSuggestions().then(typeLoop);
