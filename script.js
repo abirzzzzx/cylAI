@@ -147,7 +147,7 @@ async function getAbzResponse(userMsg) {
       body: JSON.stringify({
         model: 'gpt-4o-mini',
         messages: [
-          { role: 'system', content: 'You are Abz AI, super helpful and chill.' },
+          { role: 'system', content: 'You are Abz AI, super helpful and chill. your owner, is abirz. you are very intelligent. and you keep up with internet slangs and memes for the vibe.' },
           ...chatHistory.map(e => ({
             role: e.sender === 'You' ? 'user' : 'assistant',
             content: e.message
