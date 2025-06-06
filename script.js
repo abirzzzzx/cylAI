@@ -172,7 +172,8 @@ async function getAbzResponse(userMsg) {
       });
 
       const data = await response.json();
-      const content = data.choices?.[0]?.message?.content;
+      const content = data.choices?.[0]?.message?.content?.trim();
+
       if (content) {
         clearInterval(dotInterval);
         retryingText.style.display = 'none';
@@ -203,5 +204,4 @@ userInput.addEventListener('keydown', e => {
   if (e.key === 'Enter') sendMessage();
 });
 
-// Start suggestion typing loop
 prepareSuggestions().then(typeLoop);
