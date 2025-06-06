@@ -5,6 +5,7 @@ const askContainer = document.getElementById('askContainer');
 const userInput = document.getElementById('userInput');
 const sendBtn = document.getElementById('sendBtn');
 const chatLog = document.getElementById('chatLog');
+const retryingText = document.getElementById('retryingText');
 
 let suggestionList = [];
 let suggestionIndex = 0;
@@ -137,30 +138,49 @@ askBtn.addEventListener('click', () => {
 });
 
 async function getAbzResponse(userMsg) {
-  try {
-    const response = await fetch('https://api.naga.ac/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer ng-1q22mTLKYzbfl7rcZ3f0efRAMIrbL5NE'
-      },
-      body: JSON.stringify({
-        model: 'gpt-4o-mini',
-        messages: [
-          { role: 'system', content: 'You are Abz AI, super helpful and chill. your creator, is abirz and openAI. you are very intelligent. and you keep up with internet slangs and memes for the vibe.' },
-          ...chatHistory.map(e => ({
-            role: e.sender === 'You' ? 'user' : 'assistant',
-            content: e.message
-          })),
-          { role: 'user', content: userMsg }
-        ],
-        max_tokens: 150
-      })
-    });
-    const data = await response.json();
-    return data.choices[0]?.message?.content || 'No response.';
-  } catch {
-    return 'Sorry, no response from Abz right now.';
+  let dotCount = 0;
+  retryingText.style.display = 'block';
+
+  const dotInterval = setInterval(() => {
+    dotCount = (dotCount + 1) % 4;
+    retryingText.textContent = 'Retrying' + '.'.repeat(dotCount);
+  }, 500);
+
+  while (true) {
+    try {
+      const response = await fetch('https://api.naga.ac/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ng-1q22mTLKYzbfl7rcZ3f0efRAMIrbL5NE'
+        },
+        body: JSON.stringify({
+          model: 'gpt-4o-mini',
+          messages: [
+            {
+              role: 'system',
+              content: 'You are Abz AI, super helpful and chill. your creator, is abirz and openAI. you are very intelligent. and you keep up with internet slangs and memes for the vibe.'
+            },
+            ...chatHistory.map(e => ({
+              role: e.sender === 'You' ? 'user' : 'assistant',
+              content: e.message
+            })),
+            { role: 'user', content: userMsg }
+          ],
+          max_tokens: 150
+        })
+      });
+
+      const data = await response.json();
+      const content = data.choices?.[0]?.message?.content;
+      if (content) {
+        clearInterval(dotInterval);
+        retryingText.style.display = 'none';
+        return content;
+      }
+    } catch {
+      await new Promise(resolve => setTimeout(resolve, 1000));
+    }
   }
 }
 
