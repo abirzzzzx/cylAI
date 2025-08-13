@@ -7,6 +7,9 @@ const sendBtn = document.getElementById('sendBtn');
 const chatLog = document.getElementById('chatLog');
 const retryingText = document.getElementById('retryingText');
 
+// 🔑 Placeholder for the secret key
+const OPENROUTER_KEY = 'YOUR_SECRET_PLACEHOLDER';
+
 let suggestionList = [];
 let suggestionIndex = 0;
 let charIndex = 0;
@@ -38,24 +41,24 @@ async function fetchSuggestion() {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': 'Bearer sk-or-v1-9f2273e2515d3ee429e8027ccd466f44ff7881ff8227ba85447aad14ae397ff'
+        'Authorization': `Bearer ${OPENROUTER_KEY}`
       },
       body: JSON.stringify({
         model: 'openai/gpt-5',
         messages: [
           {
             role: 'system',
-            content: 'You are a fun, expressive AI that gives short, punchy coding ideas with emojis and excitement! Use short words. not exceeding over 80 letters'
+            content: 'You are a fun, expressive AI that gives short, punchy coding ideas with emojis! Keep it under 80 letters.'
           },
           {
             role: 'user',
-            content: 'Give one short coding idea suggestion with emojis and excitement!'
+            content: 'Give one short coding idea suggestion with emojis!'
           }
         ]
       })
     });
     const data = await res.json();
-    return data.choices[0]?.message?.content.trim() || 'Make a fun bot that tells jokes! 😂';
+    return data.choices[0]?.message?.content?.trim() || 'Make a fun bot that tells jokes! 😂';
   } catch {
     return 'Try making a chatbot that tells jokes! 😂';
   }
@@ -152,14 +155,14 @@ async function getAbzResponse(userMsg) {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': 'Bearer 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'
+          'Authorization': `Bearer ${OPENROUTER_KEY}`
         },
         body: JSON.stringify({
           model: 'openai/gpt-5',
           messages: [
             {
               role: 'system',
-              content: 'You are Abz AI, super helpful and chill. your creator, is abirz with the help of the great team openAI’s tools. you are very intelligent. and you keep up with internet slangs and memes for the vibe.'
+              content: 'You are Abz AI, super helpful and chill. Keep up with internet slangs and memes for the vibe.'
             },
             ...chatHistory.map(e => ({
               role: e.sender === 'You' ? 'user' : 'assistant',
