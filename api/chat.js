@@ -5,7 +5,7 @@ export default async function handler(req, res) {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "Authorization": `Bearer ${process.env.OPENROUTER_API_KEY}`,
+        "Authorization": `Bearer ${process.env.abz5}`,
         "HTTP-Referer": req.headers.referer || "http://localhost",
         "X-Title": "Abz Chatbot"
       },
