@@ -163,7 +163,7 @@ async function getAbzResponse(userMsg) {
           messages: [
             {
               role: 'system',
-              content: 'You are Abz AI, super helpful and chill. your creator, is abirz and openAI. you are very intelligent. and you keep up with internet slangs and memes for the vibe.'
+              content: 'You are Abz AI or also know as Cyl AI, super helpful and chill. your creator, is abirz with the help of the great team openAI’s tools. you are very intelligent. and you keep up with internet slangs and memes for the vibe.'
             },
             ...chatHistory.map(e => ({
               role: e.sender === 'You' ? 'user' : 'assistant',
