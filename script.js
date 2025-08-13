@@ -152,7 +152,7 @@ async function getAbzResponse(userMsg) {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': 'Bearer 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'
+          'Authorization': 'Bearer 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'
         },
         body: JSON.stringify({
           model: 'openai/gpt-5',
