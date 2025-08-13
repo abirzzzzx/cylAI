@@ -34,14 +34,16 @@ function renderChat() {
 
 async function fetchSuggestion() {
   try {
-    const res = await fetch('https://api.naga.ac/v1/chat/completions', {
+    const res = await fetch('https://openrouter.ai/api/v1/chat/completions', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': 'Bearer ng-Gfq6nsIN7Hz0e8q8xltGkNfL8Y816xwC'
+        'Authorization': 'Bearer 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',
+        'HTTP-Referer': window.location.origin,
+        'X-Title': document.title
       },
       body: JSON.stringify({
-        model: 'gpt-4o-mini',
+        model: 'openai/gpt-5',
         messages: [
           {
             role: 'system',
@@ -148,14 +150,16 @@ async function getAbzResponse(userMsg) {
 
   while (true) {
     try {
-      const response = await fetch('https://api.naga.ac/v1/chat/completions', {
+      const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': 'Bearer ng-1q22mTLKYzbfl7rcZ3f0efRAMIrbL5NE'
+          'Authorization': 'Bearer sk-or-v1-9f2273e2515d3ee429e8027ccd466f44ff7881ff8227ba85447aad14ae397ff',
+          'HTTP-Referer': window.location.origin,
+          'X-Title': document.title
         },
         body: JSON.stringify({
-          model: 'gpt-4o-mini',
+          model: 'openai/gpt-5',
           messages: [
             {
               role: 'system',
