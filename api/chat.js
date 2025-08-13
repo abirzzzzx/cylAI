@@ -1,29 +1,22 @@
 export default async function handler(req, res) {
-  if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Method not allowed' });
-  }
-
   try {
-    const { messages } = req.body;
-
-    const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
-      method: 'POST',
+    const { messages } = await req.body;
+    const r = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${process.env.OPENROUTER_KEY}`,
-        'HTTP-Referer': 'https://yourwebsite.com',
-        'X-Title': 'Abz Chat'
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${process.env.OPENROUTER_API_KEY}`,
+        "HTTP-Referer": req.headers.referer || "http://localhost",
+        "X-Title": "Abz Chatbot"
       },
       body: JSON.stringify({
-        model: 'openai/gpt-5',
-        messages,
-        max_tokens: 150
+        model: "openai/gpt-5",
+        messages
       })
     });
-
-    const data = await response.json();
+    const data = await r.json();
     res.status(200).json(data);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
+  } catch (e) {
+    res.status(500).json({ error: e.message });
   }
-        }
+}
