@@ -38,7 +38,7 @@ async function fetchSuggestion() {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': 'Bearer ng-1q22mTLKYzbfl7rcZ3f0efRAMIrbL5NE'
+        'Authorization': 'Bearer ng-Gfq6nsIN7Hz0e8q8xltGkNfL8Y816xwC'
       },
       body: JSON.stringify({
         model: 'gpt-4o-mini',
