@@ -34,16 +34,10 @@ function renderChat() {
 
 async function fetchSuggestion() {
   try {
-    const res = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+    const res = await fetch('/api/chat', {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer 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',
-        'HTTP-Referer': window.location.origin,
-        'X-Title': document.title
-      },
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        model: 'openai/gpt-5',
         messages: [
           {
             role: 'system',
@@ -57,7 +51,7 @@ async function fetchSuggestion() {
       })
     });
     const data = await res.json();
-    return data.choices[0]?.message?.content.trim() || 'Make a fun bot that tells jokes! 😂';
+    return data.choices?.[0]?.message?.content?.trim() || 'Make a fun bot that tells jokes! 😂';
   } catch {
     return 'Try making a chatbot that tells jokes! 😂';
   }
@@ -150,16 +144,10 @@ async function getAbzResponse(userMsg) {
 
   while (true) {
     try {
-      const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+      const response = await fetch('/api/chat', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer sk-or-v1-9f2273e2515d3ee429e8027ccd466f44ff7881ff8227ba85447aad14ae397ff',
-          'HTTP-Referer': window.location.origin,
-          'X-Title': document.title
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          model: 'openai/gpt-5',
           messages: [
             {
               role: 'system',
