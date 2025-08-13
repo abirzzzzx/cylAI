@@ -34,10 +34,14 @@ function renderChat() {
 
 async function fetchSuggestion() {
   try {
-    const res = await fetch('/api/chat', {
+    const res = await fetch('https://openrouter.ai/api/v1/chat/completions', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer sk-or-v1-9f2273e2515d3ee429e8027ccd466f44ff7881ff8227ba85447aad14ae397ff'
+      },
       body: JSON.stringify({
+        model: 'openai/gpt-5',
         messages: [
           {
             role: 'system',
@@ -51,7 +55,7 @@ async function fetchSuggestion() {
       })
     });
     const data = await res.json();
-    return data.choices?.[0]?.message?.content?.trim() || 'Make a fun bot that tells jokes! 😂';
+    return data.choices[0]?.message?.content.trim() || 'Make a fun bot that tells jokes! 😂';
   } catch {
     return 'Try making a chatbot that tells jokes! 😂';
   }
@@ -144,14 +148,18 @@ async function getAbzResponse(userMsg) {
 
   while (true) {
     try {
-      const response = await fetch('/api/chat', {
+      const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer sk-or-v1-9f2273e2515d3ee429e8027ccd466f44ff7881ff8227ba85447aad14ae397ff'
+        },
         body: JSON.stringify({
+          model: 'openai/gpt-5',
           messages: [
             {
               role: 'system',
-              content: 'You are Abz AI or also know as Cyl AI, super helpful and chill. your creator, is abirz with the help of the great team openAI’s tools. you are very intelligent. and you keep up with internet slangs and memes for the vibe.'
+              content: 'You are Abz AI, super helpful and chill. your creator, is abirz with the help of the great team openAI’s tools. you are very intelligent. and you keep up with internet slangs and memes for the vibe.'
             },
             ...chatHistory.map(e => ({
               role: e.sender === 'You' ? 'user' : 'assistant',
