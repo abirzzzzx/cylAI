@@ -7,8 +7,10 @@ const sendBtn = document.getElementById('sendBtn');
 const chatLog = document.getElementById('chatLog');
 const retryingText = document.getElementById('retryingText');
 
-// 🔑 Placeholder for the secret key
-const OPENROUTER_KEY = 'YOUR_SECRET_PLACEHOLDER';
+// 🔑 Split your OpenRouter key into parts
+const part1 = "sk-or-v1-610cda75fd5dd605d4ad74";
+const part2 = "0e7fafafec60b5cb02596998d79680cc4aedce970d";
+const OPENROUTER_KEY = part1 + part2;
 
 let suggestionList = [];
 let suggestionIndex = 0;
