@@ -8,8 +8,8 @@ const chatLog = document.getElementById('chatLog');
 const retryingText = document.getElementById('retryingText');
 
 // 🔑 Split your OpenRouter key into parts
-const part1 = "sk-or-v1-610cda75fd5dd605d4";
-const part2 = "ad740e7fafafec60b5cb02596998d79680cc4aedce970d";
+const part1 = "sk-or-v1-fd3c55ad50e601a35e8f62f2539e4bafa";
+const part2 = "4c5b75072bdf8aec6daaeabb4cd3c66";
 const OPENROUTER_KEY = part1 + part2;
 
 let suggestionList = [];
