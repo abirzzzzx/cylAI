@@ -3,22 +3,26 @@ name: Build and Deploy
 on:
   push:
     branches:
-      - main
+      - main   # runs on push to main
 
 jobs:
   build:
     runs-on: ubuntu-latest
+
     steps:
+      # Step 1: Checkout repo
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Replace secret in JS
+      # Step 2: Replace placeholder in JS
+      - name: Inject API key
         run: |
           echo "Replacing secret placeholder in JS..."
-          sed -i "s|YOUR_SECRET_PLACEHOLDER|${{ secrets.ABZ5 }}|g" ./path/to/script.js
+          sed -i "s|YOUR_SECRET_PLACEHOLDER|${{ secrets.ABZ5 }}|g" ./script.js
 
+      # Step 3: Deploy to GitHub Pages
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./path/to/build
+          publish_dir: ./   # your site files are in the root
